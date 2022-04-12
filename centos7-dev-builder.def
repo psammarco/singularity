@@ -1,0 +1,44 @@
+Bootstrap: docker
+From: centos:7.9.2009
+
+%post
+# Disabling interactive mode in yum
+echo 'assumeyes=1' >> /etc/yum.conf
+
+# Updating the package manager and installing a bunch of stuff
+yum update
+yum groupinstall "Development Tools"
+yum install wget \
+zlib-devel \
+ncurses \
+ncurses-devel \
+ncurses-libs \
+gcc \
+gcc-c++ \
+make \
+bzip2 \
+bzip2-devel \
+htslib \
+htslib-devel \
+openssl-devel \
+libffi-devel \
+xz-devel \
+elfutils-libelf \
+rpm \
+rpm-libs \
+rpm-python \
+libxstl-devel \
+python3 \
+python3-devel \
+python3-libs \
+libcurl-devel
+
+%labels
+    Author Pietro Sammarco
+    Version 1.2
+    ReleaseDate 12.04.2022
+
+%help
+    The purpose of this container is to re-create an environment that is as close to the Helix as possible without the headache of missing and/or incompatible core dependencies.
+    Contains a substantial amount of development software and libraries required for developing and compiling C and Python3 programs.
+    Additional packages might be added in the future should these be required.
