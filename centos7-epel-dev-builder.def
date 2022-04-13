@@ -36,7 +36,8 @@ python3-devel \
 python3-libs \
 libcurl-devel \
 glibc-static \
-boost
+boost \
+boost-program-options
 
 %labels
     Author Pietro Sammarco
