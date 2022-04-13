@@ -1,0 +1,55 @@
+Bootstrap: docker
+From: centos:7.9.2009
+
+%post
+# Disabling interactive mode in yum
+echo 'assumeyes=1' >> /etc/yum.conf
+
+# Adding EPEL and Software Collections repos
+yum install install epel-release \
+centos-release-scl
+
+# Updating the package manager and installing a bunch of stuff
+yum update
+yum install zlib-devel \
+wget \
+ncurses \
+ncurses-devel \
+ncurses-libs \
+devtoolset-8-gcc \
+devtoolset-8-gcc-c++ \
+make \
+bzip2 \
+bzip2-devel \
+htslib \
+htslib-devel \
+openssl-devel \
+libffi-devel \
+xz-devel \
+elfutils-libelf \
+rpm \
+rpm-libs \
+rpm-python \
+libxslt-devel \
+python3 \
+python3-devel \
+python3-libs \
+libcurl-devel \
+glibc-static \
+boost169 \
+boost169-devel \
+boost169-thread \
+boost169-static
+
+%runscript
+echo "To enable GCC8 run 'source /usr/bin/scl_source enable devtoolset-8' inside the container."
+
+%labels
+    Author Pietro Sammarco
+    Version 1.6
+    ReleaseDate 13.04.2022
+
+%help
+    The purpose of this container is to re-create an environment that is as close to the Helix as possible without the headache of missing and/or incompatible core dependencies.
+    Contains a substantial amount of development software and libraries required for developing and compiling C and Python3 programs.
+    Additional packages might be added in the future should these be required. Added EPEL repo for HTSlib and SCL repo for GCC8.
