@@ -30,18 +30,21 @@ elfutils-libelf \
 rpm \
 rpm-libs \
 rpm-python \
-libxstl-devel \
+libxslt-devel \
 python3 \
 python3-devel \
 python3-libs \
 libcurl-devel \
 glibc-static \
-boost \
-boost-program-options
+boost169 \
+boost169-devel \
+boost169-thread \
+boost169-static
+
 
 %labels
     Author Pietro Sammarco
-    Version 1.5
+    Version 1.6
     ReleaseDate 13.04.2022
 
 %help
