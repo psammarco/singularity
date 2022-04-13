@@ -1,0 +1,31 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%post
+# Disable apt interactive mode
+export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+
+# Sync apt, install locales and tzdata
+apt update; apt install -y tzdata locales
+
+# Setting locale
+printf 'en_GB ISO-8859-1%b\nen_GB.UTF-8 UTF-8' > /etc/locale.gen; locale-gen
+printf 'tzdata tzdata/Areas select Europe%b\ntzdata tzdata/Zones/Europe select London' > /tmp/tzdata
+debconf-set-selections /tmp/tzdata
+
+# Installing R and dependencies
+apt install -y r-base r-base-dev bedtools build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+
+# Installing the devtools R library as well the ecTMB R library and its dependencies
+R -e 'install.packages(c("devtools", "BiocManager"))';
+R -e 'BiocManager::install(c("limma", "GenomicRanges"))';
+R -e 'library(devtools); devtools::install_github("bioinform/ecTMB")';
+
+%labels
+    Author Pietro Sammarco
+    Version 0.1
+    ReleaseDate 10.03.2022
+
+%help
+    POC container providing R-3.6.3 and the ecTMB v0.10 R library.
+    For more info: https://github.com/bioinform/ecTMB
