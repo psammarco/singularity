@@ -43,7 +43,7 @@ update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/b
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
 
 # Downloading and extracting R
-wget https://cloud.r-project.org/src/base/R-4/R-4.0.3.tar.gz
+wget --no-check-certificate https://cloud.r-project.org/src/base/R-4/R-4.0.3.tar.gz
 tar -xvf R-4.0.3.tar.gz
 
 # Compiling R
@@ -52,10 +52,14 @@ cd R-4.0.3
 make -j2
 make install
 
+%runscript
+echo 'In order to map the container /usr/local/lib/R/library to the host R library catalog run:'
+echo 'singularity shell --bind /host/actual/R/library:/usr/local/lib/R/library containername.sif'
+
 %labels
     Author Pietro Sammarco
     Version 1.0
     ReleaseDate 14.04.2022
 
 %help
-    Ubuntu 18.04 dev builder for R/4.0.3 featuring GCC8.
+    Ubuntu 18.04 dev builder featuring R/4.0.3, boost 1.65 and GCC8.
