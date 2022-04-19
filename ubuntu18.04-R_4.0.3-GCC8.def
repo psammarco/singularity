@@ -36,7 +36,9 @@ texlive \
 texlive-fonts-extra \
 wget \
 libpcre2-dev \
-libboost-all-dev
+libboost-all-dev \
+libfftw3-dev \
+libtiff5-dev
 
 # Enabling GCC8 as default compiler
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
@@ -53,13 +55,13 @@ make -j2
 make install
 
 %runscript
-echo 'In order to map the container /usr/local/lib/R/library to the host R library catalog run:'
-echo 'singularity shell --bind /host/actual/R/library:/usr/local/lib/R/library containername.sif'
+echo 'In order to map the host R library catalog and doc directories run:'
+echo 'singularity shell --bind /host/actual/R/library:/usr/local/lib/R/library --bind /host/actual/R/doc:/usr/local/lib/R/doc containername.sif'
 
 %labels
     Author Pietro Sammarco
-    Version 1.0
-    ReleaseDate 14.04.2022
+    Version 1.1
+    ReleaseDate 19.04.2022
 
 %help
     Ubuntu 18.04 dev builder featuring R/4.0.3, boost 1.65 and GCC8.
