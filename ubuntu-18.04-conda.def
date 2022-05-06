@@ -1,0 +1,37 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%post
+# Disable apt interactive mode
+export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+
+# Sync apt, install locales and tzdata
+apt update; apt install -y tzdata locales
+
+# Setting locale
+printf 'en_GB ISO-8859-1%b\nen_GB.UTF-8 UTF-8' > /etc/locale.gen; locale-gen
+printf 'tzdata tzdata/Areas select Europe%b\ntzdata tzdata/Zones/Europe select London' > /tmp/tzdata
+debconf-set-selections /tmp/tzdata
+
+# Installing development tools and dependencies
+apt install -y wget \
+xz-utils \
+python3.8 \
+python3.8-dev
+
+# Installing Miniconda latest for python3.8
+wget  --no-check-certificate https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh
+bash Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p /opt/miniconda3
+rm Miniconda3-py38_4.11.0-Linux-x86_64.sh
+
+%environment
+# Adding miniconda binary directory into $PATH
+export PATH=$PATH:/opt/miniconda3/bin
+
+%labels
+    Author Pietro Sammarco
+    Version 1.1
+    ReleaseDate 06.05.2022
+
+%help
+   Minimal container with Python3.8 and Miniconda latest.
