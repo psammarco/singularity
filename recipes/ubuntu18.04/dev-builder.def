@@ -15,23 +15,35 @@ debconf-set-selections /tmp/tzdata
 
 # Installing development tools and dependencies
 apt install -y wget \
+build-essential \
+libcurl4-gnutls-dev \
+libxml2-dev \
+libssl-dev \
+zlib1g-dev \
+zlib1g \
+ncurses-bin \
+libncurses5-dev \
+libncursesw5 \
+libncursesw5-dev \
+bzip2 \
+libbz2-dev \
+htslib-test \
+libhts-dev \
+libhts2 \
+tabix \
+libffi-dev \
 xz-utils \
+libelf-dev \
+elfutils \
+libreadline-dev \
 python3.8 \
 python3.8-dev
-
-# Installing Miniconda latest for python3.8
-wget  --no-check-certificate https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh
-bash Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p /opt/miniconda3
-rm Miniconda3-py38_4.11.0-Linux-x86_64.sh
-
-%environment
-# Adding miniconda binary directory into $PATH
-export PATH=$PATH:/opt/miniconda3/bin
 
 %labels
     Author Pietro Sammarco
     Version 1.1
-    ReleaseDate 06.05.2022
+    ReleaseDate 12.04.2022
 
 %help
-   Minimal container with Python3.8 and Miniconda latest.
+    The purpose of this container is to re-create an environment that is as close to Inuvika as possible without the headache of missing and/or incompatible core dependencies.
+    Contains a substantial amount of development software and libraries required for developing and compiling C and Python3 programs.

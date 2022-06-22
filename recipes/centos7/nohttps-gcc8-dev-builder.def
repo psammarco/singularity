@@ -9,6 +9,9 @@ echo 'assumeyes=1' >> /etc/yum.conf
 yum install install epel-release \
 centos-release-scl
 
+# Disabling epel HTTPS repo since blocked by the company firewall
+sed -i 's/#baseurl/baseurl/g;s/metalink/#metalink/g'  /etc/yum.repos.d/epel.repo
+
 # Updating the package manager and installing a bunch of stuff
 yum update
 yum install zlib-devel \
@@ -35,21 +38,24 @@ python3 \
 python3-devel \
 python3-libs \
 libcurl-devel \
-glibc-static \
-boost169 \
-boost169-devel \
-boost169-thread \
-boost169-static
+glibc-static
 
-%runscript
-echo "To enable GCC8 run 'source /usr/bin/scl_source enable devtoolset-8' inside the container."
+# Adding GCC8 library path to LD_LIBRARY_PATH #couldn't export it through %environment so editing the env file directly instead
+sed -i 's@LD_LIBRARY_PATH="@LD_LIBRARY_PATH="/opt/rh/devtoolset-8/root/usr/lib64:/opt/rh/devtoolset-8/root/usr/lib:/opt/rh/devtoolset-8/root/lib:/opt/rh/devtoolset-8/root/lib64:@g' /.singularity.d/env/99-base.sh
+
+# Removing default gcc
+yum remove gcc-4.8.5-44.el7.x86_64
+
+# Adding GCC8 to environment path
+%environment
+    PATH=$PATH:/opt/rh/devtoolset-8/root/bin
 
 %labels
     Author Pietro Sammarco
-    Version 1.6
-    ReleaseDate 13.04.2022
+    Version 1.7.3
+    ReleaseDate 21.06.2022
 
 %help
     The purpose of this container is to re-create an environment that is as close to the Helix as possible without the headache of missing and/or incompatible core dependencies.
     Contains a substantial amount of development software and libraries required for developing and compiling C and Python3 programs.
-    Additional packages might be added in the future should these be required. Added EPEL repo for HTSlib and SCL repo for GCC8.
+    Added EPEL and SCL repos for HTSlib and GCC8. Disabled HTTPS epel repo since now blocked by the company firewall.
