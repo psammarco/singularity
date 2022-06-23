@@ -1,0 +1,74 @@
+bootstrap: docker
+From: ubuntu:18.04
+
+%post
+# Disable apt interactive mode
+export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+
+# Sync apt, install PREQ deps
+apt update
+apt install -y tzdata \
+locales \
+curl \
+gnupg
+
+# Adding bionic-cran40 repo
+echo 'deb http://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/' >> /etc/apt/sources.list
+
+# Adding bionic-cran40 repo apt key to system
+curl -k 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9' -o bionic-cran40.txt
+apt-key add bionic-cran40.txt
+
+rver=4.0.2-1.1804.0
+
+# Installing dev enviornment related packages
+apt update
+apt install -y \
+r-base=$rver \
+r-base-dev=$rver \
+r-recommended=$rver \
+r-base-html=$rver \
+libharfbuzz0b \
+libharfbuzz-dev \
+gcc-8 \
+g++-8 \
+make \
+wget \
+libcurl4-openssl-dev \
+libxml2-dev \
+libssl-dev \
+gfortran \
+libreadline-dev \
+libpng-dev \
+libjpeg-dev \
+libcairo2-dev \
+xvfb \
+libbz2-dev \
+libzstd-dev \
+liblzma-dev \
+texinfo \
+texlive \
+texlive-fonts-extra \
+libpcre2-dev \
+libboost-all-dev \
+libfftw3-dev \
+libtiff5-dev
+
+# Enabling GCC8 as default compiler
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+
+%environment
+    export LC_ALL=C.UTF-8
+
+%runscript
+echo 'In order to map the host R library catalog and doc directories run:'
+echo 'singularity shell --bind /host/actual/R/library:/usr/local/lib/R/library --bind /host/actual/R/doc:/usr/local/lib/R/doc containername.sif'
+
+%labels
+    Author Pietro Sammarco
+    Version 1.1.2
+    ReleaseDate 22.06.2022
+
+%help
+    Ubuntu 18.04 dev builder featuring R/4.0.2-1, boost 1.65 and GCC8.
