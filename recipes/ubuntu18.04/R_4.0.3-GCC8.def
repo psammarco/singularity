@@ -1,24 +1,38 @@
-Bootstrap: docker
 From: ubuntu:18.04
 
 %post
 # Disable apt interactive mode
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 
-# Sync apt, install locales and tzdata
-apt update; apt install -y tzdata locales
+# Sync apt, install PREQ deps
+apt update
+apt install -y tzdata \
+locales \
+curl \
+gnupg
 
-# Setting locale
-printf 'en_GB ISO-8859-1%b\nen_GB.UTF-8 UTF-8' > /etc/locale.gen; locale-gen
-printf 'tzdata tzdata/Areas select Europe%b\ntzdata tzdata/Zones/Europe select London' > /tmp/tzdata
-debconf-set-selections /tmp/tzdata
+# Adding bionic-cran40 repo
+echo 'deb http://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/' >> /etc/apt/sources.list
+
+# Adding bionic-cran40 repo apt key to system
+curl -k 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xe298a3a825c0d65dfd57cbb651716619e084dab9' -o bionic-cran40.txt
+apt-key add bionic-cran40.txt
+
+rver=4.0.3-1.1804.0
 
 # Installing dev enviornment related packages
-apt install -y libharfbuzz0b \
+apt update
+apt install -y \
+r-base=$rver \
+r-base-dev=$rver \
+r-recommended=$rver \
+r-base-html=$rver \
+libharfbuzz0b \
 libharfbuzz-dev \
 gcc-8 \
 g++-8 \
 make \
+wget \
 libcurl4-openssl-dev \
 libxml2-dev \
 libssl-dev \
@@ -34,7 +48,6 @@ liblzma-dev \
 texinfo \
 texlive \
 texlive-fonts-extra \
-wget \
 libpcre2-dev \
 libboost-all-dev \
 libfftw3-dev \
@@ -44,15 +57,8 @@ libtiff5-dev
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
 
-# Downloading and extracting R
-wget --no-check-certificate https://cloud.r-project.org/src/base/R-4/R-4.0.3.tar.gz
-tar -xvf R-4.0.3.tar.gz
-
-# Compiling R
-cd R-4.0.3
-./configure --prefix='/usr/local' --enable-R-shlib --without-recommended-packages --with-x=no
-make -j2
-make install
+%environment
+    export LC_ALL=C.UTF-8
 
 %runscript
 echo 'In order to map the host R library catalog and doc directories run:'
@@ -60,8 +66,8 @@ echo 'singularity shell --bind /host/actual/R/library:/usr/local/lib/R/library -
 
 %labels
     Author Pietro Sammarco
-    Version 1.1
-    ReleaseDate 19.04.2022
+    Version 1.1.2
+    ReleaseDate 22.06.2022
 
 %help
     Ubuntu 18.04 dev builder featuring R/4.0.3, boost 1.65 and GCC8.
