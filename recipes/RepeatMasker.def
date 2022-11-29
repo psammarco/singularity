@@ -1,0 +1,57 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%post
+# Disable apt interactive mode
+export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+
+# Sync apt, install locales and tzdata
+apt update; apt install -y tzdata locales
+
+# Setting locale
+printf 'en_GB ISO-8859-1%b\nen_GB.UTF-8 UTF-8' > /etc/locale.gen; locale-gen
+printf 'tzdata tzdata/Areas select Europe%b\ntzdata tzdata/Zones/Europe select London' > /tmp/tzdata
+debconf-set-selections /tmp/tzdata
+
+# Exporting Lingua
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+# Installing dependencies
+apt install -y \
+curl \
+perl6 \
+python3 \
+python3-pip
+
+pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org h5py
+
+# TRF
+curl -kL https://github.com/Benson-Genomics-Lab/TRF/releases/download/v4.09.1/trf409.linux64 --output /usr/local/bin/trf409.linux64
+chmod +x /usr/local/bin/trf409.linux64
+
+# RMBlast
+curl -kLO http://repeatmasker.org/rmblast-2.11.0+-x64-linux.tar.gz
+tar --strip-components=2 -xvf rmblast-2.11.0+-x64-linux.tar.gz -C  /usr/local/bin
+
+# RepeatMasker
+curl -kLO https://www.repeatmasker.org/RepeatMasker/RepeatMasker-4.1.4.tar.gz
+tar -xvf RepeatMasker-4.1.4.tar.gz -C /usr/local
+cd /usr/local/RepeatMasker
+perl ./configure -trf_prgm /usr/local/bin/trf409.linux64 -rmblast_dir /usr/local/bin
+
+# Cleaning
+rm /*tar.gz
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export PATH=$PATH:/usr/local/RepeatMasker
+
+%labels
+    Author Pietro Sammarco
+    Version 0.3
+    ReleaseDate 29.11.2022
+
+%help
+     Ubuntu 20.04, RepeatMasker 4.1.4, RMBlast 2.11.0, TRF 4.09.1.
